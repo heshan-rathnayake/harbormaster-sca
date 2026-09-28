@@ -1,0 +1,62 @@
+# Dependencies and build output
+node_modules/
+dist/
+build/
+.next/
+next-env.d.ts
+.turbo/
+*.tsbuildinfo
+coverage/
+
+# Rust
+target/
+
+# Go
+/services/*/bin/
+*.test
+coverage.out
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Test reports
+test-results/
+playwright-report/
+
+# Secrets: commit only .env.example or SOPS-encrypted files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.agekey
+
+# Terraform (do commit .terraform.lock.hcl)
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+
+# Local tool state
+.task/
+mise.local.toml
+.mise.local.toml
+
+# Logs
+*.log
+
+# Editors and OS
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+*.swp

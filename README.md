@@ -31,6 +31,14 @@ Architecture diagrams and decision records will live in `docs/`.
 
 Progress is tracked on the [project board](https://github.com/users/heshan-rathnayake/projects/3).
 
+## Development
+You need Linux or WSL2, Docker, [mise](https://mise.jdx.dev) and [rustup](https://rustup.rs). After cloning:
+
+```bash
+mise trust && mise install   # pinned tool versions from .mise.toml
+lefthook install             # git hooks, including secret scanning
+```
+
 ## Security
 Please report vulnerabilities privately. See [SECURITY.md](SECURITY.md).
 

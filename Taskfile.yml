@@ -1,0 +1,45 @@
+# One entry point for every language. Each service adds its own Taskfile
+# under `includes` when it is created, e.g. `task findings:test`.
+version: "3"
+
+tasks:
+  default:
+    cmds:
+      - task --list
+    silent: true
+
+  setup:
+    desc: Install dependencies and git hooks (run `mise install` first)
+    cmds:
+      - pnpm install
+      - lefthook install
+
+  lint:
+    desc: Lint all code
+    cmds:
+      - pnpm exec turbo run lint
+
+  check-types:
+    desc: Type-check all code
+    cmds:
+      - pnpm exec turbo run check-types
+
+  test:
+    desc: Run all tests
+    cmds:
+      - pnpm exec turbo run test
+
+  build:
+    desc: Build everything
+    cmds:
+      - pnpm exec turbo run build
+
+  fmt:
+    desc: Format all files
+    cmds:
+      - pnpm exec prettier --write .
+
+  fmt:check:
+    desc: Check formatting without changing anything
+    cmds:
+      - pnpm exec prettier --check .

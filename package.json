@@ -1,0 +1,16 @@
+{
+  "name": "harbormaster",
+  "private": true,
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.6.0"
+    }
+  },
+  "devDependencies": {
+    "@typescript/native": "npm:typescript@^7.0.2",
+    "prettier": "^3.9.9",
+    "turbo": "^2.11.5",
+    "typescript": "npm:@typescript/typescript6@^6.0.2"
+  }
+}

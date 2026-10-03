@@ -1,0 +1,103 @@
+# Local infrastructure for development. Apps run on the host (`task dev`) and
+# reach these services on localhost; containers reach each other by service name.
+name: harbormaster
+
+services:
+  postgres:
+    image: pgvector/pgvector:0.8.6-pg17
+    environment:
+      POSTGRES_DB: harbormaster
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set it in .env}
+      HM_API_DB_PASSWORD: ${HM_API_DB_PASSWORD:?set it in .env}
+      HM_FINDINGS_DB_PASSWORD: ${HM_FINDINGS_DB_PASSWORD:?set it in .env}
+      HM_TRIAGE_DB_PASSWORD: ${HM_TRIAGE_DB_PASSWORD:?set it in .env}
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d harbormaster"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redpanda:
+    image: redpandadata/redpanda:v26.2.3
+    command:
+      - redpanda
+      - start
+      - --mode=dev-container
+      - --smp=1
+      - --memory=1G
+      - --kafka-addr=internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr=internal://redpanda:9092,external://localhost:19092
+      - --schema-registry-addr=internal://0.0.0.0:8081
+      - --rpc-addr=redpanda:33145
+      - --advertise-rpc-addr=redpanda:33145
+      - --default-log-level=warn
+    ports:
+      - "127.0.0.1:19092:19092"
+    volumes:
+      - redpanda-data:/var/lib/redpanda/data
+    healthcheck:
+      test: ["CMD-SHELL", "rpk cluster health | grep -qE 'Healthy:.+true'"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redpanda-init:
+    image: redpandadata/redpanda:v26.2.3
+    entrypoint: ["/bin/bash", "/init/create-topics.sh"]
+    volumes:
+      - ./infra/redpanda/create-topics.sh:/init/create-topics.sh:ro
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    restart: "no"
+
+  redpanda-console:
+    image: redpandadata/console:v3.12.0
+    environment:
+      KAFKA_BROKERS: redpanda:9092
+      SCHEMAREGISTRY_ENABLED: "true"
+      SCHEMAREGISTRY_URLS: http://redpanda:8081
+      REDPANDA_ADMINAPI_ENABLED: "true"
+      REDPANDA_ADMINAPI_URLS: http://redpanda:9644
+    ports:
+      - "127.0.0.1:8080:8080"
+    # Waiting for topic creation also lets `docker compose up --wait` treat the
+    # one-off redpanda-init container as finished rather than failed.
+    depends_on:
+      redpanda-init:
+        condition: service_completed_successfully
+
+  lgtm:
+    image: grafana/otel-lgtm:0.34.0
+    ports:
+      - "127.0.0.1:3001:3000"
+      - "127.0.0.1:4317:4317"
+      - "127.0.0.1:4318:4318"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:3000/api/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  s3:
+    image: chrislusf/seaweedfs:4.48
+    command: ["mini", "-dir=/data"]
+    environment:
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:?set it in .env}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:?set it in .env}
+      S3_BUCKET: harbormaster
+    ports:
+      - "127.0.0.1:8333:8333"
+    volumes:
+      - s3-data:/data
+
+volumes:
+  postgres-data:
+  redpanda-data:
+  s3-data:

@@ -19,7 +19,7 @@ Dependency scanners report hundreds of advisories, and most of them don't affect
 4. A Python service runs an AI triage agent that looks for evidence of reachability in your code.
 5. A Next.js console shows the findings, the verdicts and how each one was reached.
 
-Architecture diagrams and decision records will live in `docs/`.
+Decision records are in [`docs/adr/`](docs/adr/); architecture diagrams will follow.
 
 ## Roadmap
 
@@ -40,8 +40,21 @@ You need Linux or WSL2, Docker, [mise](https://mise.jdx.dev) and [rustup](https:
 
 ```bash
 mise trust && mise install   # pinned tool versions from .mise.toml
-task setup                   # dependencies and git hooks
+task setup                   # dependencies, git hooks and a local .env
+task up                      # start local infrastructure
 ```
+
+`task up` starts these local services:
+Stop them with `task down` (keeps your data) or `task reset` (deletes it). Local passwords are in `.env`, copied from `.env.example`.
+
+| Service              | Address                                          |
+| -------------------- | ------------------------------------------------ |
+| Postgres             | `localhost:5433`                                 |
+| Kafka (Redpanda)     | `localhost:19092`                                |
+| Redpanda Console     | http://localhost:8080                            |
+| Grafana              | http://localhost:3001                            |
+| OpenTelemetry (OTLP) | `localhost:4317` (gRPC), `localhost:4318` (HTTP) |
+| S3 (SeaweedFS)       | http://localhost:8333                            |
 
 ## Security
 

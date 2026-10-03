@@ -9,10 +9,27 @@ tasks:
     silent: true
 
   setup:
-    desc: Install dependencies and git hooks (run `mise install` first)
+    desc: Install dependencies, git hooks and a local .env (run `mise install` first)
     cmds:
+      - test -f .env || cp .env.example .env
       - pnpm install
       - lefthook install
+
+  up:
+    desc: Start local infrastructure (Postgres, Redpanda, Grafana, S3)
+    cmds:
+      - docker compose up -d --wait
+
+  down:
+    desc: Stop local infrastructure (keeps the data)
+    cmds:
+      - docker compose down
+
+  reset:
+    desc: Stop local infrastructure and delete its data
+    prompt: This deletes all local databases, topics and stored files. Continue?
+    cmds:
+      - docker compose down -v
 
   lint:
     desc: Lint all code

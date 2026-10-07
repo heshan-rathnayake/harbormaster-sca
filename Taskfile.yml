@@ -12,6 +12,7 @@ tasks:
     desc: Install dependencies, git hooks and a local .env (run `mise install` first)
     cmds:
       - test -f .env || cp .env.example .env
+      - test -f apps/api/.env || cp apps/api/.env.example apps/api/.env
       - pnpm install
       - lefthook install
 

@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Organization {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  name      String
+  slug      String    @unique
+  plan      String    @default("free")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  projects  Project[]
+
+  @@map("organizations")
+}
+
+model Project {
+  id            String       @id @default(uuid(7)) @db.Uuid
+  orgId         String       @map("org_id") @db.Uuid
+  org           Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  slug          String
+  name          String
+  repoUrl       String?      @map("repo_url")
+  defaultBranch String       @default("main") @map("default_branch")
+  createdAt     DateTime     @default(now()) @map("created_at") @db.Timestamptz
+
+  @@unique([orgId, slug])
+  @@map("projects")
+}

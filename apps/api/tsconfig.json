@@ -13,5 +13,5 @@
     "incremental": true,
     "types": ["vitest/globals", "node"]
   },
-  "include": ["src", "prisma.config.ts", "vitest.config.ts"]
+  "include": ["src", "prisma7.config.ts", "vitest.config.ts"]
 }

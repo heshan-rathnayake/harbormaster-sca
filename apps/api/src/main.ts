@@ -13,6 +13,7 @@ async function bootstrap() {
     new FastifyAdapter(),
   );
   const config = app.get<ConfigService<Env, true>>(ConfigService);
+  app.enableShutdownHooks();
   await app.listen(
     config.get("PORT", { infer: true }),
     config.get("HOST", { infer: true }),

@@ -1,3 +1,4 @@
+import { ConsoleLogger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import {
@@ -12,8 +13,14 @@ async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter(),
+    { bufferLogs: true },
   );
   const config = app.get<ConfigService<Env, true>>(ConfigService);
+  app.useLogger(
+    new ConsoleLogger({
+      json: config.get("LOG_FORMAT", { infer: true }) === "json",
+    }),
+  );
   app.setGlobalPrefix("api/v1", { exclude: ["healthz", "readyz"] });
 
   const openapi = new DocumentBuilder()

@@ -34,8 +34,8 @@ describe("validateEnv", () => {
   });
 
   it("rejects a PORT that is not a number", () => {
-    expect(() => validateEnv({ ...requiredVars, PORT: "not-a-number" })).toThrow(
-      /PORT/,
-    );
+    expect(() =>
+      validateEnv({ ...requiredVars, PORT: "not-a-number" }),
+    ).toThrow(/PORT/);
   });
 });

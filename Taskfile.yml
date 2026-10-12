@@ -2,6 +2,11 @@
 # under `includes` when it is created, e.g. `task findings:test`.
 version: "3"
 
+includes:
+  api:
+    taskfile: ./apps/api/Taskfile.yml
+    dir: ./apps/api
+
 tasks:
   default:
     cmds:
@@ -31,6 +36,11 @@ tasks:
     prompt: This deletes all local databases, topics and stored files. Continue?
     cmds:
       - docker compose down -v
+
+  dev:
+    desc: Run the apps in watch mode (run `task up` first)
+    cmds:
+      - pnpm exec turbo run dev
 
   lint:
     desc: Lint all code

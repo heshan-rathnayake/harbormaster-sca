@@ -1,0 +1,14 @@
+# Tasks for the API only. The root Taskfile includes this file as `api`,
+# so `migrate` below runs as `task api:migrate`.
+version: "3"
+
+tasks:
+  migrate:
+    desc: Create and apply a database migration, e.g. `task api:migrate -- --name add_scans`
+    cmds:
+      - pnpm db:migrate {{.CLI_ARGS}}
+
+  nest:
+    desc: Run the Nest CLI, e.g. `task api:nest -- generate module scans`
+    cmds:
+      - pnpm exec nest {{.CLI_ARGS}}

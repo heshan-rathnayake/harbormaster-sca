@@ -40,12 +40,15 @@ You need Linux or WSL2, Docker, [mise](https://mise.jdx.dev) and [rustup](https:
 
 ```bash
 mise trust && mise install   # pinned tool versions from .mise.toml
-task setup                   # dependencies, git hooks and a local .env
+task setup                   # dependencies, git hooks and local .env files
 task up                      # start local infrastructure
+task api:migrate             # create the database tables
+task dev                     # run the apps and restart them on changes
 ```
 
+The API then runs at http://localhost:4000, with its documentation at http://localhost:4000/api/v1/docs. Run `task` to list every command.
+
 `task up` starts these local services:
-Stop them with `task down` (keeps your data) or `task reset` (deletes it). Local passwords are in `.env`, copied from `.env.example`.
 
 | Service              | Address                                          |
 | -------------------- | ------------------------------------------------ |
@@ -55,6 +58,8 @@ Stop them with `task down` (keeps your data) or `task reset` (deletes it). Local
 | Grafana              | http://localhost:3001                            |
 | OpenTelemetry (OTLP) | `localhost:4317` (gRPC), `localhost:4318` (HTTP) |
 | S3 (SeaweedFS)       | http://localhost:8333                            |
+
+Stop them with `task down` (keeps your data) or `task reset` (deletes it). Local passwords are in the `.env` files, copied from the `.env.example` files.
 
 ## Security
 

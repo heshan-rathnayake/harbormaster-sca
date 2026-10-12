@@ -13,6 +13,7 @@ async function bootstrap() {
     new FastifyAdapter(),
   );
   const config = app.get<ConfigService<Env, true>>(ConfigService);
+  app.setGlobalPrefix("api/v1", { exclude: ["healthz", "readyz"] });
   app.enableShutdownHooks();
   await app.listen(
     config.get("PORT", { infer: true }),

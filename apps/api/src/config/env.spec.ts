@@ -10,6 +10,7 @@ const fullVars = {
   HOST: "127.0.0.1",
   PORT: "4040",
   LOG_FORMAT: "pretty",
+  DEBUG_ENDPOINTS: "true",
 };
 
 describe("validateEnv", () => {
@@ -21,6 +22,7 @@ describe("validateEnv", () => {
       HOST: "0.0.0.0",
       PORT: 4000,
       LOG_FORMAT: "json",
+      DEBUG_ENDPOINTS: false,
       DATABASE_URL: "postgresql://localhost:5432/test",
     });
   });
@@ -28,7 +30,7 @@ describe("validateEnv", () => {
   it("returns the provided values when all environment variables are provided", () => {
     const env = validateEnv(fullVars);
 
-    expect(env).toEqual({ ...fullVars, PORT: 4040 });
+    expect(env).toEqual({ ...fullVars, PORT: 4040, DEBUG_ENDPOINTS: true });
   });
 
   it("rejects a missing DATABASE_URL and names it in the message", () => {
@@ -45,5 +47,11 @@ describe("validateEnv", () => {
     expect(() => validateEnv({ ...requiredVars, LOG_FORMAT: "xml" })).toThrow(
       /LOG_FORMAT/,
     );
+  });
+
+  it("rejects a DEBUG_ENDPOINTS that is not a true or false", () => {
+    expect(() =>
+      validateEnv({ ...requiredVars, DEBUG_ENDPOINTS: "not-a-boolean" }),
+    ).toThrow(/DEBUG_ENDPOINTS/);
   });
 });

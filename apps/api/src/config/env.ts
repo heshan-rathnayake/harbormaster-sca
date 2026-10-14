@@ -7,6 +7,7 @@ export const envSchema = z.object({
   HOST: z.string().default("0.0.0.0"),
   PORT: z.coerce.number().int().positive().default(4000),
   LOG_FORMAT: z.enum(["json", "pretty"]).default("json"),
+  DEBUG_ENDPOINTS: z.stringbool().default(false),
   DATABASE_URL: z.url(),
 });
 

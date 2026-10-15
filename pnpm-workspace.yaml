@@ -2,6 +2,7 @@ packages:
   - "apps/*"
   - "packages/*"
 allowBuilds:
+  "@confluentinc/kafka-javascript": true
   "@prisma/engines": true
   "@scarf/scarf": false
   prisma: true

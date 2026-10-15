@@ -11,10 +11,21 @@ export const envSchema = z.object({
   DATABASE_URL: z.url(),
 });
 
-export type Env = z.infer<typeof envSchema>;
+export const relayEnvSchema = envSchema.extend({
+  KAFKA_BROKERS: z
+    .string()
+    .transform((value) => value.split(",").map((broker) => broker.trim()))
+    .pipe(z.array(z.string().min(1)).min(1)),
+});
 
-export function validateEnv(raw: Record<string, unknown>): Env {
-  const result = envSchema.safeParse(raw);
+export type Env = z.infer<typeof envSchema>;
+export type RelayEnv = z.infer<typeof relayEnvSchema>;
+
+function parse<Schema extends z.ZodType>(
+  schema: Schema,
+  raw: Record<string, unknown>,
+): z.infer<Schema> {
+  const result = schema.safeParse(raw);
 
   if (!result.success) {
     throw new Error(
@@ -22,4 +33,12 @@ export function validateEnv(raw: Record<string, unknown>): Env {
     );
   }
   return result.data;
+}
+
+export function validateEnv(raw: Record<string, unknown>): Env {
+  return parse(envSchema, raw);
+}
+
+export function validateRelayEnv(raw: Record<string, unknown>): RelayEnv {
+  return parse(relayEnvSchema, raw);
 }

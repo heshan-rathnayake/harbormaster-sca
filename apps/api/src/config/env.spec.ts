@@ -1,4 +1,4 @@
-import { validateEnv } from "./env.js";
+import { validateEnv, validateRelayEnv } from "./env.js";
 
 const requiredVars = {
   DATABASE_URL: "postgresql://localhost:5432/test",
@@ -11,6 +11,11 @@ const fullVars = {
   PORT: "4040",
   LOG_FORMAT: "pretty",
   DEBUG_ENDPOINTS: "true",
+};
+
+const relayVars = {
+  ...requiredVars,
+  KAFKA_BROKERS: "localhost:19092",
 };
 
 describe("validateEnv", () => {
@@ -53,5 +58,45 @@ describe("validateEnv", () => {
     expect(() =>
       validateEnv({ ...requiredVars, DEBUG_ENDPOINTS: "not-a-boolean" }),
     ).toThrow(/DEBUG_ENDPOINTS/);
+  });
+});
+
+describe("validateRelayEnv", () => {
+  it("adds the broker list to the API's settings", () => {
+    const env = validateRelayEnv(relayVars);
+
+    expect(env).toEqual({
+      NODE_ENV: "development",
+      HOST: "0.0.0.0",
+      PORT: 4000,
+      LOG_FORMAT: "json",
+      DEBUG_ENDPOINTS: false,
+      DATABASE_URL: "postgresql://localhost:5432/test",
+      KAFKA_BROKERS: ["localhost:19092"],
+    });
+  });
+
+  it("splits a comma-separated broker list", () => {
+    const env = validateRelayEnv({
+      ...requiredVars,
+      KAFKA_BROKERS: "broker-1:9092, broker-2:9092",
+    });
+
+    expect(env.KAFKA_BROKERS).toEqual(["broker-1:9092", "broker-2:9092"]);
+  });
+
+  it("rejects a missing KAFKA_BROKERS", () => {
+    expect(() => validateRelayEnv({ ...requiredVars })).toThrow(
+      /KAFKA_BROKERS/,
+    );
+  });
+
+  it("rejects an empty entry in the broker list", () => {
+    expect(() =>
+      validateRelayEnv({
+        ...requiredVars,
+        KAFKA_BROKERS: "localhost:19092,",
+      }),
+    ).toThrow(/KAFKA_BROKERS/);
   });
 });

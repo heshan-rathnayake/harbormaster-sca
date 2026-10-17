@@ -4,10 +4,11 @@ import {
   Injectable,
   Logger,
   type OnModuleDestroy,
-  type OnModuleInit,
 } from "@nestjs/common";
+import { withTimeout } from "../common/with-timeout.js";
 
 export const KAFKA_PRODUCER = "KAFKA_PRODUCER";
+const CONNECT_TIMEOUT_MS = 10_000;
 
 export interface KafkaMessage {
   topic: string;
@@ -17,15 +18,19 @@ export interface KafkaMessage {
 }
 
 @Injectable()
-export class KafkaService implements OnModuleInit, OnModuleDestroy {
+export class KafkaService implements OnModuleDestroy {
   private readonly logger = new Logger(KafkaService.name);
 
   constructor(
     @Inject(KAFKA_PRODUCER) private readonly producer: KafkaJS.Producer,
   ) {}
 
-  async onModuleInit(): Promise<void> {
-    await this.producer.connect();
+  async connect(): Promise<void> {
+    await withTimeout(
+      this.producer.connect(),
+      CONNECT_TIMEOUT_MS,
+      `Could not connect to the broker within ${CONNECT_TIMEOUT_MS / 1000} s. Is it running, and is KAFKA_BROKERS right?`,
+    );
     this.logger.log("Connected to the broker");
   }
 

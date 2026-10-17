@@ -33,12 +33,13 @@ describe("KafkaService", () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.useRealTimers();
   });
 
   it("connects to the broker when the app starts", async () => {
-    const { moduleRef, producer } = await createModule();
+    const { service, producer } = await createModule();
 
-    await moduleRef.init();
+    await service.connect();
 
     expect(producer.connect).toHaveBeenCalledOnce();
   });
@@ -90,5 +91,18 @@ describe("KafkaService", () => {
         headers: {},
       }),
     ).rejects.toThrow("broker unavailable");
+  });
+
+  it("gives up when the broker does not answer within 10 seconds", async () => {
+    vi.useFakeTimers();
+    const { service, producer } = await createModule();
+    producer.connect.mockImplementation(() => new Promise(() => undefined));
+
+    const connecting = expect(service.connect()).rejects.toThrow(
+      /Could not connect to the broker within 10 s/,
+    );
+    await vi.advanceTimersByTimeAsync(10_000);
+
+    await connecting;
   });
 });

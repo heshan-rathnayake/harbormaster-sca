@@ -1,8 +1,9 @@
 import { KafkaJS } from "@confluentinc/kafka-javascript";
-import { Module } from "@nestjs/common";
+import { Logger, Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import type { RelayEnv } from "../config/env.js";
 import { KAFKA_PRODUCER, KafkaService } from "./kafka.service.js";
+import { createKafkaLogger } from "./kafka-logger.js";
 
 @Module({
   providers: [
@@ -14,6 +15,7 @@ import { KAFKA_PRODUCER, KafkaService } from "./kafka.service.js";
           kafkaJS: {
             clientId: "hm-relay",
             brokers: config.get("KAFKA_BROKERS", { infer: true }),
+            logger: createKafkaLogger(new Logger("KafkaClient")),
           },
         }).producer({ kafkaJS: { idempotent: true } }),
     },

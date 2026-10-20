@@ -16,6 +16,7 @@ import { createKafkaLogger } from "./kafka-logger.js";
             clientId: "hm-relay",
             brokers: config.get("KAFKA_BROKERS", { infer: true }),
             logger: createKafkaLogger(new Logger("KafkaClient")),
+            retry: { initialRetryTime: 1000, maxRetryTime: 10_000 },
           },
         }).producer({ kafkaJS: { idempotent: true } }),
     },

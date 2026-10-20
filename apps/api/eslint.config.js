@@ -2,7 +2,7 @@ import base from "@harbormaster/eslint-config/base";
 import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig([
-  globalIgnores(["src/generated/", "dist/"]),
+  globalIgnores(["src/generated/", "dist/", "dist-relay/"]),
   base,
   {
     languageOptions: {

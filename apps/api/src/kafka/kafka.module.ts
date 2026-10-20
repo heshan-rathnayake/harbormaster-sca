@@ -18,7 +18,10 @@ import { createKafkaLogger } from "./kafka-logger.js";
             logger: createKafkaLogger(new Logger("KafkaClient")),
             retry: { initialRetryTime: 1000, maxRetryTime: 10_000 },
           },
-        }).producer({ kafkaJS: { idempotent: true } }),
+        }).producer({
+          "message.timeout.ms": 10_000,
+          kafkaJS: { idempotent: true },
+        }),
     },
     KafkaService,
   ],

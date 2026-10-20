@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import type { RelayEnv } from "./config/env.js";
 import { RelayModule } from "./relay/relay.module.js";
-import { KafkaService } from "./kafka/kafka.service.js";
+import { RelayService } from "./relay/relay.service.js";
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(RelayModule, {
@@ -18,7 +18,7 @@ async function bootstrap() {
   app.enableShutdownHooks();
 
   try {
-    await app.get(KafkaService).connect();
+    await app.get(RelayService).start();
   } catch (error) {
     new Logger("Relay").error(
       "The relay could not start",

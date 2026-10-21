@@ -40,7 +40,7 @@ tasks:
   dev:
     desc: Run the apps in watch mode (run `task up` first)
     cmds:
-      - pnpm exec turbo run dev
+      - pnpm exec turbo run dev dev:relay
 
   lint:
     desc: Lint all code

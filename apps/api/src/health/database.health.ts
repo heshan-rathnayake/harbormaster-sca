@@ -4,17 +4,9 @@ import {
   type HealthIndicatorResult,
 } from "@nestjs/terminus";
 import { PrismaService } from "../prisma/prisma.service.js";
+import { withTimeout } from "../common/with-timeout.js";
 
 const TIMEOUT_MS = 1500;
-
-function rejectAfter(ms: number): Promise<never> {
-  return new Promise((_resolve, reject) => {
-    setTimeout(
-      () => reject(new Error(`No answer within ${ms} ms`)),
-      ms,
-    ).unref();
-  });
-}
 
 @Injectable()
 export class DatabaseHealthIndicator {
@@ -28,10 +20,11 @@ export class DatabaseHealthIndicator {
   async isReachable(key = "database"): Promise<HealthIndicatorResult> {
     const indicator = this.indicators.check(key);
     try {
-      await Promise.race([
+      await withTimeout(
         this.prisma.$queryRaw`SELECT 1`,
-        rejectAfter(TIMEOUT_MS),
-      ]);
+        TIMEOUT_MS,
+        `No answer within ${TIMEOUT_MS} ms`,
+      );
       return indicator.up();
     } catch (error) {
       // The cause goes to the logs only: this endpoint needs no login, so its

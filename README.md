@@ -46,7 +46,7 @@ task api:migrate             # create the database tables
 task dev                     # run the apps and restart them on changes
 ```
 
-The API then runs at http://localhost:4000, with its documentation at http://localhost:4000/api/v1/docs. Run `task` to list every command.
+The API then runs at http://localhost:4000, with its documentation at http://localhost:4000/api/v1/docs. `task dev` also runs the outbox relay, which publishes the API's events to Redpanda; you can watch them arrive in Redpanda Console. Run `task` to list every command.
 
 `task up` starts these local services:
 

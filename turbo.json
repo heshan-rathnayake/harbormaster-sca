@@ -21,6 +21,11 @@
       "dependsOn": ["db:generate"],
       "persistent": true,
       "cache": false
+    },
+    "dev:relay": {
+      "dependsOn": ["db:generate"],
+      "persistent": true,
+      "cache": false
     }
   }
 }

@@ -1,6 +1,7 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider        = "prisma-client"
+  previewFeatures = ["partialIndexes"]
+  output          = "../src/generated/prisma"
 }
 
 datasource db {
@@ -30,4 +31,18 @@ model Project {
 
   @@unique([orgId, slug])
   @@map("projects")
+}
+
+model Outbox {
+  id          BigInt    @id @default(autoincrement())
+  topic       String
+  key         String
+  payload     Json
+  headers     Json      @default("{}")
+  attempts    Int       @default(0)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  publishedAt DateTime? @map("published_at") @db.Timestamptz
+
+  @@index([id], map: "outbox_unpublished_idx", where: raw("published_at IS NULL"))
+  @@map("outbox")
 }

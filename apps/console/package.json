@@ -1,0 +1,29 @@
+{
+  "name": "@harbormaster/console",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "check-types": "next typegen && tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "16.4.3",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@harbormaster/eslint-config": "workspace:*",
+    "@harbormaster/tsconfig": "workspace:*",
+    "@tailwindcss/turbopack": "^4",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^10.12.0",
+    "tailwindcss": "^4",
+    "typescript": "^6.0.2"
+  }
+}

@@ -1,3 +1,7 @@
 export default function Home() {
-  return <h1>Harbormaster</h1>;
+  return (
+    <main>
+      <h1>Harbormaster</h1>;
+    </main>
+  );
 }

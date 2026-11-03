@@ -8,6 +8,7 @@
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "incremental": true,
+    "lib": ["dom", "dom.iterable", "esnext"],
     "plugins": [
       {
         "name": "next"

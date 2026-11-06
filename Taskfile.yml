@@ -18,6 +18,7 @@ tasks:
     cmds:
       - test -f .env || cp .env.example .env
       - test -f apps/api/.env || cp apps/api/.env.example apps/api/.env
+      - test -f apps/console/.env || cp apps/console/.env.example apps/console/.env
       - pnpm install
       - lefthook install
 
